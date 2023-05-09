@@ -138,6 +138,19 @@ class Beam:
         screen.blit(self._img, self._rct) 
 
 
+class Score():
+    def __init__(self):
+        self.font = pg.font.SysFont("hgep006", 50 )
+        self.point = 0
+
+    def cal_score(self, point):
+        self.point += point * 10
+        return self.point
+
+    def draw(self, screen):
+        text = self.font.render("score:{:04d}".format(self.point), True, (0,0,0))
+        screen.blit(text, [10, 10])
+    
 def main():
     pg.display.set_caption("たたかえ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
@@ -147,7 +160,9 @@ def main():
     bird = Bird(3, (900, 400))
     bombs = [Bomb() for _ in range(NUM_OG_BOMBS)]
     beam = None
+    score = Score()
 
+    count = 0
     tmr = 0
     while True:
         for event in pg.event.get():
@@ -178,8 +193,10 @@ def main():
                     beam = None
                     del bombs[i]
                     bird.change_img(6, screen)
+                    score.cal_score(1)
                     break
-
+        
+        score.draw(screen)
         pg.display.update()
         clock.tick(1000)
 
