@@ -136,13 +136,6 @@ class Beam:
     def update(self, screen: pg.Surface): 
         self._rct.move_ip(self._vx, self._vy)
         screen.blit(self._img, self._rct)
-        yoko, tate = check_bound(screen.get_rect(), self._rct)
-        if not yoko:
-            bean = None
-        if not tate:
-            beam = None
-        self._rct.move_ip(self._vx, self._vy)
-        screen.blit(self._img, self._rct)
 
 class Score():
     def __init__(self):
@@ -192,7 +185,6 @@ def main():
         bird.update(key_lst, screen)
         
         for i, beam in  enumerate(beams):
-            print(beams[i])
             beam.update(screen)
             for j, bomb in enumerate(bombs):
                 if beam._rct.colliderect(bomb._rct):
@@ -203,6 +195,7 @@ def main():
                     if len(bombs) == 0:
                         bombs = [Bomb() for _ in range(NUM_OG_BOMBS)]
                     break
+
         score.draw(screen)
         pg.display.update()
         clock.tick(1000)
