@@ -52,7 +52,7 @@ class Bird():
             (0, +1): pg.transform.rotozoom(img1, -90, 1.0),  # 下
             (+1, +1): pg.transform.rotozoom(img1, -45, 1.0),  # 右下
         }
-        self._img = self._imgs[(+1, 0)]
+        self._img = self._imgs[(+1, 0)]   # デフォルトで右      
         self._rct = self._img.get_rect()
         self._rct.center = xy
 
@@ -71,19 +71,19 @@ class Bird():
         引数1 key_lst：押下キーの真理値リスト
         引数2 screen：画面Surface
         """
-        sum_move = [0, 0]
+        sum_mv = [0, 0]
         for k, mv in __class__._delta.items():
             if key_lst[k]:
                 self._rct.move_ip(mv)
-                sum_move[0] = mv[0]
-                sum_move[1] = mv[1]
+                sum_mv[0] += mv[0]  # 横方向合計
+                sum_mv[1] += mv[1]  # 縦方向合計
         if check_bound(screen.get_rect(), self._rct) != (True, True):
             for k, mv in __class__._delta.items():
                 if key_lst[k]:
                     self._rct.move_ip(-mv[0], -mv[1])
-        if sum_move[0] != 0  or sum_move[1] != 0:
-            screen.blit(self._img, self._rct)
-            self._img = self._img(tuple[sum_move[0], sum_move[1]])
+        if not (sum_mv[0] == 0 and sum_mv[1] == 0):
+            self._img = self._imgs[tuple(sum_mv)]  # 押されたキーの合計値
+        screen.blit(self._img, self._rct)
 
 
 class Bomb():
@@ -178,6 +178,7 @@ def main():
                     beam = None
                     del bombs[i]
                     bird.change_img(6, screen)
+                    break
 
         pg.display.update()
         clock.tick(1000)
