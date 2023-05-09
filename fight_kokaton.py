@@ -152,7 +152,7 @@ def main():
                 bird.change_img(8, screen)
                 pg.display.update()
                 time.sleep(1)
-            return
+                return
         
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
