@@ -194,8 +194,10 @@ def main():
                     del bombs[i]
                     bird.change_img(6, screen)
                     score.cal_score(1)
+                    if len(bombs) == 0:
+                        bombs = [Bomb() for _ in range(NUM_OG_BOMBS)]
                     break
-        
+
         score.draw(screen)
         pg.display.update()
         clock.tick(1000)
