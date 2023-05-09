@@ -23,15 +23,7 @@ def check_bound(area: pg.Rect, obj: pg.Rect) -> tuple[bool, bool]:
         tate = False
     return yoko, tate
 
-# 練習0
-class Characer:
-
-    def get_rct(self):
-        return self._rct
-
-
-
-class Bird(Characer):
+class Bird():
     """
     ゲームキャラクター（こうかとん）に関するクラス
     """
@@ -84,7 +76,7 @@ class Bird(Characer):
         screen.blit(self._img, self._rct)
 
 
-class Bomb(Characer):
+class Bomb():
     """
     爆弾に関するクラス
     """
@@ -114,9 +106,22 @@ class Bomb(Characer):
         self._rct.move_ip(self._vx, self._vy)
         screen.blit(self._img, self._rct)
 
-# 練習0
-def ckeck_collide():
-    check_bound(Bird.get_rect(), Bomb.get_rect())
+
+class Beam:
+    """
+    こうかとんが放つビームに関するクラス
+    """
+    def __init__(self, bird:Bird):
+        self._img = pg.transform.rotozoom(pg.image.load(f"ex03/fig/beam.png"), 0, 2.0)
+        self._rct = self._img.get_rect()
+        self._rct.left = bird._rct.right
+        self._rct.centery = bird._rct.centery
+        
+        self._vx, self._vy = +1, 0
+    
+    def update(self, screen: pg.Surface): 
+        self._rct.move_ip(self._vx, self._vy)
+        screen.blit(self._img, self._rct) 
 
 
 def main():
@@ -127,12 +132,16 @@ def main():
 
     bird = Bird(3, (900, 400))
     bomb = Bomb((255, 0, 0), 10)
+    beam = None
 
     tmr = 0
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 return
+            if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
+                beam = Beam(bird)
+
         tmr += 1
         screen.blit(bg_img, [0, 0])
         
@@ -142,6 +151,12 @@ def main():
             pg.display.update()
             time.sleep(1)
             return
+        
+        if beam is not None:
+            beam.update(screen)
+            if beam is not None and beam._rct.colliderect(bomb._rct):
+                beam = None
+                bomb = None
 
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
