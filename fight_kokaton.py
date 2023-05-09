@@ -142,7 +142,7 @@ class Score():
         self.font = pg.font.SysFont("hgep006", 50 )
         self.point = 0
 
-    def cal_score(self, point):
+    def cal_score(self, point): #  得点を更新する関数
         self.point += point * 10
         return self.point
 
