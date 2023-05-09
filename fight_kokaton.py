@@ -135,8 +135,14 @@ class Beam:
     
     def update(self, screen: pg.Surface): 
         self._rct.move_ip(self._vx, self._vy)
-        screen.blit(self._img, self._rct) 
-
+        screen.blit(self._img, self._rct)
+        yoko, tate = check_bound(screen.get_rect(), self._rct)
+        if not yoko:
+            bean = None
+        if not tate:
+            beam = None
+        self._rct.move_ip(self._vx, self._vy)
+        screen.blit(self._img, self._rct)
 
 class Score():
     def __init__(self):
@@ -159,17 +165,16 @@ def main():
 
     bird = Bird(3, (900, 400))
     bombs = [Bomb() for _ in range(NUM_OG_BOMBS)]
-    beam = None
+    beams = []
     score = Score()
 
-    count = 0
     tmr = 0
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 return
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
-                beam = Beam(bird)
+                beams.append(Beam(bird))
 
         tmr += 1
         screen.blit(bg_img, [0, 0])
@@ -186,18 +191,18 @@ def main():
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
         
-        if beam is not None:
+        for i, beam in  enumerate(beams):
+            print(beams[i])
             beam.update(screen)
-            for i, bomb in enumerate(bombs):
+            for j, bomb in enumerate(bombs):
                 if beam._rct.colliderect(bomb._rct):
-                    beam = None
-                    del bombs[i]
+                    del beams[i]
+                    del bombs[j]
                     bird.change_img(6, screen)
                     score.cal_score(1)
                     if len(bombs) == 0:
                         bombs = [Bomb() for _ in range(NUM_OG_BOMBS)]
                     break
-
         score.draw(screen)
         pg.display.update()
         clock.tick(1000)
